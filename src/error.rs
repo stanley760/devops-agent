@@ -31,6 +31,12 @@ pub enum AppError {
     #[error("IO 错误: {0}")]
     Io(#[from] std::io::Error),
 
+    #[error("Plan-Execute 错误: {0}")]
+    PlanExecute(#[from] devops_agent_core::error::PlanExecuteError),
+
+    #[error("MCP 连接错误: {0}")]
+    Mcp(#[from] devops_agent_mcp::client::McpError),
+
     #[error("内部错误: {0}")]
     Internal(String),
 }
@@ -42,11 +48,13 @@ impl IntoResponse for AppError {
             AppError::Llm(_)
             | AppError::Prompt(_)
             | AppError::VectorStore(_)
-            | AppError::Tool(_) => (StatusCode::BAD_GATEWAY, self.to_string()),
+            | AppError::Tool(_)
+            | AppError::PlanExecute(_) => (StatusCode::BAD_GATEWAY, self.to_string()),
             AppError::Http(_) => (StatusCode::BAD_GATEWAY, self.to_string()),
             AppError::Database(_) => (StatusCode::SERVICE_UNAVAILABLE, self.to_string()),
             AppError::Json(_) => (StatusCode::BAD_REQUEST, self.to_string()),
             AppError::Io(_) => (StatusCode::INTERNAL_SERVER_ERROR, self.to_string()),
+            AppError::Mcp(_) => (StatusCode::BAD_GATEWAY, self.to_string()),
             AppError::Internal(_) => (StatusCode::INTERNAL_SERVER_ERROR, self.to_string()),
         };
 

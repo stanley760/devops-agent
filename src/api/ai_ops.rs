@@ -2,9 +2,10 @@ use axum::extract::State;
 use axum::Json;
 use serde::{Deserialize, Serialize};
 
+use devops_agent_agent::plan_execute::run_plan_execute_loop;
+
 use crate::agent::aiops_agent;
 use crate::error::AppError;
-use crate::pipeline::aiops::run_aiops_loop;
 use crate::AppState;
 
 /// AIOps 请求（当前为空，自动获取告警）
@@ -47,10 +48,10 @@ pub async fn ai_ops_handler(
 5. 查询日志时，需要指定 region 和 topic_id 参数
 6. 生成结构化的告警分析报告"#;
 
-    // 运行 Plan-Execute-Replan 循环
-    let report = run_aiops_loop(alert_prompt, &agents, 20).await?;
+    // 运行 Plan-Execute-Replan 循环（使用框架 crate 的通用实现）
+    let report = run_plan_execute_loop(alert_prompt, &agents, 20).await?;
 
-    tracing::info!(summary = %report.alert_summary, "AIOps 分析完成");
+    tracing::info!(summary = %report.summary, "AIOps 分析完成");
 
     Ok(Json(AioPsResponse {
         result: report.root_cause,

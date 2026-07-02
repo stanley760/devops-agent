@@ -1,11 +1,16 @@
-use rig_core::agent::Agent;
+//! AIOps Agent 构建 — 使用 devops-agent-agent 框架
+//!
+//! 业务特定的 preamble 和 agent 组装逻辑保留在此，
+//! 通用的 Plan-Execute-Replan 循环逻辑在 devops-agent-agent crate 中。
+
 use rig_core::client::CompletionClient;
-use rig_core::extractor::Extractor;
 use rig_core::providers;
 use rig_core::providers::deepseek::CompletionModel as DeepSeekCompletionModel;
 
+use devops_agent_agent::plan_execute::{PlanExecuteAgents, ReplanResult};
+
 use crate::config::AppConfig;
-use crate::pipeline::plan_types::{AioPsPlan, InvestigationResult};
+use crate::plan_types::AioPsPlan;
 use crate::tools::current_time::CurrentTimeTool;
 use crate::tools::prometheus::PrometheusAlertsTool;
 
@@ -46,11 +51,10 @@ const AIOPS_REPLAN_PREAMBLE: &str = r#"你是一个专业的 SRE/AIOps 评估者
 请严格按照 JSON schema 返回评估结果。"#;
 
 /// AIOps 各阶段 Agent 和 Extractor 的集合
-pub struct AiopsAgents {
-    pub plan_extractor: Extractor<DeepSeekCompletionModel, AioPsPlan>,
-    pub executor_agent: Agent<DeepSeekCompletionModel>,
-    pub replan_extractor: Extractor<DeepSeekCompletionModel, InvestigationResult>,
-}
+///
+/// 使用 devops-agent-agent 的 PlanExecuteAgents 类型，
+/// 泛型参数为 DeepSeekCompletionModel 和 AioPsPlan。
+pub type AiopsAgents = PlanExecuteAgents<DeepSeekCompletionModel, AioPsPlan>;
 
 /// 构建 AIOps Agent 集合
 pub fn build_aiops_agents(
@@ -82,14 +86,14 @@ pub fn build_aiops_agents(
 
     // 重规划提取器 (Think 模型)
     let replan_extractor = ds_client
-        .extractor::<InvestigationResult>(&config.deepseek_think_model)
+        .extractor::<ReplanResult<AioPsPlan>>(&config.deepseek_think_model)
         .preamble(AIOPS_REPLAN_PREAMBLE)
         .retries(1)
         .build();
 
-    Ok(AiopsAgents {
-        plan_extractor,
-        executor_agent,
-        replan_extractor,
+    Ok(PlanExecuteAgents {
+        planner: plan_extractor,
+        executor: executor_agent,
+        replanner: replan_extractor,
     })
 }

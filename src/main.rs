@@ -4,8 +4,7 @@ mod config;
 mod error;
 mod hooks;
 mod mcp;
-mod pipeline;
-mod sse;
+mod plan_types;
 mod tools;
 mod vector_store;
 
@@ -97,7 +96,7 @@ async fn main() -> Result<(), anyhow::Error> {
     if let Some(ref mcp_url) = config.mcp_url {
         tracing::info!(url = %mcp_url, "尝试连接 MCP 服务...");
         let mcp_client = mcp::cls::ClsMcpClient::new(mcp_url.clone());
-        match mcp_client.connect().await {
+        match mcp_client.connect(mcp_url).await {
             Ok(_) => tracing::info!("MCP 服务连接成功"),
             Err(e) => tracing::warn!(error = %e, "MCP 服务连接失败，继续启动"),
         }

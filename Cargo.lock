@@ -487,9 +487,13 @@ name = "devops-agent"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "async-stream",
  "axum",
  "chrono",
+ "devops-agent-agent",
+ "devops-agent-core",
+ "devops-agent-mcp",
+ "devops-agent-server",
+ "devops-agent-tool",
  "dotenvy",
  "futures",
  "reqwest",
@@ -507,6 +511,73 @@ dependencies = [
  "tracing",
  "tracing-subscriber",
  "uuid",
+]
+
+[[package]]
+name = "devops-agent-agent"
+version = "0.1.0"
+dependencies = [
+ "devops-agent-core",
+ "futures",
+ "rig-core",
+ "schemars",
+ "serde",
+ "serde_json",
+ "thiserror",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "devops-agent-core"
+version = "0.1.0"
+dependencies = [
+ "rig-core",
+ "schemars",
+ "serde",
+ "serde_json",
+ "thiserror",
+ "tokio",
+]
+
+[[package]]
+name = "devops-agent-mcp"
+version = "0.1.0"
+dependencies = [
+ "devops-agent-core",
+ "reqwest",
+ "rig-core",
+ "rmcp",
+ "thiserror",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "devops-agent-server"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "devops-agent-core",
+ "futures",
+ "rig-core",
+ "serde",
+ "serde_json",
+ "tokio-stream",
+ "tower-http",
+]
+
+[[package]]
+name = "devops-agent-tool"
+version = "0.1.0"
+dependencies = [
+ "devops-agent-core",
+ "rig-core",
+ "serde",
+ "serde_json",
+ "thiserror",
+ "tokio",
+ "tracing",
 ]
 
 [[package]]

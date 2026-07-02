@@ -1,56 +1,77 @@
+[workspace]
+resolver = "3"
+members = [
+    ".",
+    "crates/devops-agent-core",
+    "crates/devops-agent-agent",
+    "crates/devops-agent-tool",
+    "crates/devops-agent-mcp",
+    "crates/devops-agent-server",
+]
+
+[workspace.dependencies]
+# 内部 crate
+devops-agent-core = { path = "crates/devops-agent-core" }
+devops-agent-agent = { path = "crates/devops-agent-agent" }
+devops-agent-tool = { path = "crates/devops-agent-tool" }
+devops-agent-mcp = { path = "crates/devops-agent-mcp" }
+devops-agent-server = { path = "crates/devops-agent-server" }
+
+# 外部依赖（统一版本）
+rig-core = { version = "0.38.2", features = ["derive", "rmcp"] }
+rig-milvus = "0.38.2"
+tokio = { version = "1", features = ["full"] }
+axum = { version = "0.8", features = ["macros", "multipart"] }
+tower-http = { version = "0.6", features = ["cors"] }
+futures = "0.3"
+tokio-stream = "0.1"
+async-stream = "0.3"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+schemars = "1"
+thiserror = "2"
+anyhow = "1"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+chrono = "0.4"
+reqwest = { version = "0.13", features = ["json", "rustls"] }
+sqlx = { version = "0.8", features = ["runtime-tokio", "mysql", "tls-rustls"] }
+rmcp = { version = "1.7", features = [
+    "client", "macros", "reqwest",
+    "transport-streamable-http-client",
+    "transport-streamable-http-client-reqwest",
+] }
+uuid = { version = "1", features = ["v4"] }
+dotenvy = "0.15"
+
 [package]
 name = "devops-agent"
 version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-# rig 核心
-rig-core = { version = "0.38.2", features = ["derive", "rmcp"] }
-rig-milvus = "0.38.2"
-
-# 异步运行时
-tokio = { version = "1", features = ["full"] }
-
-# Web 框架
-axum = { version = "0.8", features = ["macros", "multipart"] }
-tower-http = { version = "0.6", features = ["cors"] }
-
-# SSE / 流式
-futures = "0.3"
-tokio-stream = "0.1"
-async-stream = "0.3"
-
-# 序列化
-serde = { version = "1", features = ["derive"] }
-serde_json = "1"
-schemars = "1"
-
-# 配置
-dotenvy = "0.15"
-
-# 错误处理
-thiserror = "2"
-anyhow = "1"
-
-# 数据库
-sqlx = { version = "0.8", features = ["runtime-tokio", "mysql", "tls-rustls"] }
-
-# 日志
-tracing = "0.1"
-tracing-subscriber = { version = "0.3", features = ["env-filter"] }
-
-# HTTP 客户端 (Prometheus API)
-reqwest = { version = "0.13", features = ["json", "rustls"] }
-
-# MCP (rmcp 由 rig-core rmcp feature 拉入，额外 transport)
-rmcp = { version = "1.7", features = [
-    "client", "macros", "reqwest",
-    "transport-streamable-http-client",
-    "transport-streamable-http-client-reqwest",
-] }
-
-# 时间
-chrono = "0.4"
-
-# 文件处理
-uuid = { version = "1", features = ["v4"] }
+devops-agent-core = { workspace = true }
+devops-agent-agent = { workspace = true }
+devops-agent-tool = { workspace = true }
+devops-agent-mcp = { workspace = true }
+devops-agent-server = { workspace = true }
+rig-core = { workspace = true }
+rig-milvus = { workspace = true }
+tokio = { workspace = true }
+axum = { workspace = true }
+tower-http = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+schemars = { workspace = true }
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+chrono = { workspace = true }
+reqwest = { workspace = true }
+sqlx = { workspace = true }
+rmcp = { workspace = true }
+uuid = { workspace = true }
+dotenvy = { workspace = true }
+futures = { workspace = true }
+tokio-stream = { workspace = true }
